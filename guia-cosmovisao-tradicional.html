@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guia — Cosmovisão Tradicional</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ═══════════════════════════════════════
+       DATA: All books with PT edition info
+       ═══════════════════════════════════════ */
+
+    const AUTHORS = [
+      {
+        id: "guenon",
+        name: "René Guénon",
+        dates: "1886 – 1951",
+        label: "Autor I",
+        focus: "Metafísica Pura e Simbolismo Tradicional",
+        color: "#6B4226",
+        colorLight: "#F6EDE6",
+        colorMid: "#D4A574",
+        books: [
+          { orig: "Introduction générale à l'étude des doctrines hindoues", pt: "Introdução Geral ao Estudo das Doutrinas Hindus", year: 1921, cover: "https://m.media-amazon.com/images/I/71miGzKUjiL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+introdu%C3%A7%C3%A3o+geral+doutrinas+hindus" } },
+          { orig: "Le Théosophisme, histoire d'une pseudo-religion", pt: "Teosofismo: História de uma Pseudo-Religião", year: 1921, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+teosofismo" } },
+          { orig: "L'Erreur spirite", pt: "O Erro Espírita", year: 1923, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+erro+esp%C3%ADrita" } },
+          { orig: "Orient et Occident", pt: "Oriente e Ocidente", year: 1924, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+oriente+ocidente" } },
+          { orig: "L'Homme et son devenir selon le Vêdânta", pt: "O Homem e Seu Devir segundo o Vedanta", year: 1925, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+homem+devir+vedanta" } },
+          { orig: "L'Ésotérisme de Dante", pt: "O Esoterismo de Dante", year: 1925, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+esoterismo+dante" } },
+          { orig: "Le Roi du Monde", pt: "O Rei do Mundo", year: 1927, cover: "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1504853171i/36202241.jpg", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+rei+do+mundo" } },
+          { orig: "La Crise du monde moderne", pt: "A Crise do Mundo Moderno", year: 1927, cover: "https://m.media-amazon.com/images/I/71whiHR+IAL.jpg", ptEdition: { available: true, publisher: "IRGET / Martins Fontes (1948)", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+crise+mundo+moderno" } },
+          { orig: "Autorité spirituelle et pouvoir temporel", pt: "Autoridade Espiritual e Poder Temporal", year: 1929, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+autoridade+espiritual" } },
+          { orig: "Le Symbolisme de la Croix", pt: "O Simbolismo da Cruz", year: 1931, cover: "https://m.media-amazon.com/images/I/81iC6Md5-iL._UF1000,1000_QL80_.jpg", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+simbolismo+cruz" } },
+          { orig: "Les États multiples de l'Être", pt: "Os Estados Múltiplos do Ser", year: 1932, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+estados+m%C3%BAltiplos" } },
+          { orig: "La Métaphysique orientale", pt: "A Metafísica Oriental", year: 1939, note: "Conferência na Sorbonne, 1925", cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+metaf%C3%ADsica+oriental" } },
+          { orig: "Le Règne de la Quantité et les Signes des Temps", pt: "O Reino da Quantidade e os Sinais dos Tempos", year: 1945, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+reino+quantidade" } },
+          { orig: "Les Principes du Calcul infinitésimal", pt: "Os Princípios do Cálculo Infinitesimal", year: 1946, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+c%C3%A1lculo+infinitesimal" } },
+          { orig: "Aperçus sur l'Initiation", pt: "Considerações sobre a Iniciação", year: 1946, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+considera%C3%A7%C3%B5es+inicia%C3%A7%C3%A3o" } },
+          { orig: "La Grande Triade", pt: "A Grande Tríade", year: 1946, cover: "https://m.media-amazon.com/images/I/71DFZ7i8GPL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: true, publisher: "Pensamento / IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+grande+tr%C3%ADade" } },
+          { orig: "Initiation et Réalisation spirituelle", pt: "Iniciação e Realização Espiritual", year: 1952, posthumous: true, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+inicia%C3%A7%C3%A3o+realiza%C3%A7%C3%A3o" } },
+          { orig: "Aperçus sur l'ésotérisme chrétien", pt: "Considerações sobre o Esoterismo Cristão", year: 1954, posthumous: true, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+esoterismo+crist%C3%A3o" } },
+          { orig: "Symboles de la Science sacrée", pt: "Símbolos da Ciência Sagrada", year: 1962, posthumous: true, cover: "https://images.epagine.fr/934/9781911417934_1_75.jpg", ptEdition: { available: true, publisher: "Pensamento", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+s%C3%ADmbolos+ci%C3%AAncia+sagrada" } },
+          { orig: "Études sur la Franc-Maçonnerie et le Compagnonnage", pt: "Estudos sobre a Franco-Maçonaria e o Companheirismo", year: "1964–65", posthumous: true, note: "2 vols.", cover: "https://m.media-amazon.com/images/I/51FBKDZXFYL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+franco+ma%C3%A7onaria" } },
+          { orig: "Études sur l'Hindouisme", pt: "Estudos sobre o Hinduísmo", year: 1966, posthumous: true, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+estudos+hinduismo" } },
+          { orig: "Formes traditionnelles et Cycles cosmiques", pt: "Formas Tradicionais e Ciclos Cósmicos", year: 1970, posthumous: true, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+formas+tradicionais+ciclos" } },
+          { orig: "Aperçus sur l'ésotérisme islamique et le Taoïsme", pt: "Considerações sobre o Esoterismo Islâmico e o Taoísmo", year: 1973, posthumous: true, cover: "", ptEdition: { available: true, publisher: "IRGET", link: "https://www.estantevirtual.com.br/busca?q=gu%C3%A9non+esoterismo+isl%C3%A2mico+tao%C3%ADsmo" } },
+          { orig: "Comptes rendus", pt: "Resenhas", year: 1973, posthumous: true, cover: "https://m.media-amazon.com/images/I/51yElybefkL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: false } },
+          { orig: "Mélanges", pt: "Miscelânea", year: 1976, posthumous: true, cover: "https://m.media-amazon.com/images/I/71h0nq29ziL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: false } },
+        ]
+      },
+      {
+        id: "schuon",
+        name: "Frithjof Schuon",
+        dates: "1907 – 1998",
+        label: "Autor II",
+        focus: "Religiões Tradicionais, Metafísica e Arte",
+        color: "#2B4A5C",
+        colorLight: "#E8EFF3",
+        colorMid: "#6A9AB5",
+        books: [
+          { orig: "Leitgedanken zur Urbesinnung", pt: "Primordial Meditation: Contemplating the Real", year: 1935, note: "Em alemão", cover: "https://images.thalia.media/07/-/5d962ca799c248c7b20b9789cb2ffb9d/leitgedanken-zur-urbesinnung-taschenbuch-frithjof-schuon.jpeg", ptEdition: { available: false } },
+          { orig: "De l'Unité transcendante des Religions", pt: "A Unidade Transcendente das Religiões", year: 1948, cover: "", ptEdition: { available: true, publisher: "IRGET (2011)", link: "https://www.estantevirtual.com.br/busca?q=schuon+unidade+transcendente" } },
+          { orig: "L'Œil du Cœur", pt: "O Olho do Coração", year: 1950, cover: "https://m.media-amazon.com/images/I/A1nkydcSfRL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: false } },
+          { orig: "Perspectives spirituelles et Faits humains", pt: "Perspectivas Espirituais e Fatos Humanos", year: 1953, cover: "https://m.media-amazon.com/images/I/81eFSo7fTTL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: false } },
+          { orig: "Sentiers de Gnose", pt: "Gnose: Sabedoria Divina", year: 1957, cover: "", ptEdition: { available: true, publisher: "Stella Maris (2025)", link: "https://www.amazon.com.br/s?k=schuon+gnose+sabedoria+divina" } },
+          { orig: "Castes et Races", pt: "O Sentido das Raças", year: 1957, cover: "https://m.media-amazon.com/images/I/61djTsU6q7L._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: true, publisher: "IBRASA (2002)", link: "https://www.estantevirtual.com.br/busca?q=schuon+sentido+ra%C3%A7as" } },
+          { orig: "Les Stations de la Sagesse", pt: "Estações da Sabedoria", year: 1958, cover: "https://pictures.abebooks.com/inventory/31053271131.jpg", ptEdition: { available: false } },
+          { orig: "Images de l'Esprit", pt: "Imagens do Espírito", year: 1961, cover: "", ptEdition: { available: false } },
+          { orig: "Comprendre l'Islam", pt: "Para Compreender o Islã", year: 1961, cover: "", ptEdition: { available: true, publisher: "Nova Era (2006)", link: "https://www.estantevirtual.com.br/busca?q=schuon+compreender+isl%C3%A3" } },
+          { orig: "Regards sur les Mondes anciens", pt: "O Homem no Universo", year: 1965, cover: "", ptEdition: { available: true, publisher: "Perspectiva (2001)", link: "https://www.estantevirtual.com.br/busca?q=schuon+homem+universo" } },
+          { orig: "Logique et Transcendance", pt: "Lógica e Transcendência", year: 1970, cover: "", ptEdition: { available: true, publisher: "Ponte Editora, Portugal (2023)", link: "https://www.amazon.com.br/s?k=schuon+l%C3%B3gica+transcend%C3%AAncia" } },
+          { orig: "Forme et Substance dans les Religions", pt: "Forma e Substância nas Religiões", year: 1975, cover: "", ptEdition: { available: true, publisher: "Sapientia (2011)", link: "https://www.estantevirtual.com.br/busca?q=schuon+forma+subst%C3%A2ncia" } },
+          { orig: "L'Ésotérisme comme Principe et comme Voie", pt: "O Esoterismo como Princípio e como Via", year: 1978, cover: "", ptEdition: { available: true, publisher: "Pensamento (1985)", link: "https://www.estantevirtual.com.br/busca?q=schuon+esoterismo+princ%C3%ADpio" } },
+          { orig: "Le Soufisme: Voile et Quintessence", pt: "Sufismo: Véu e Quintessência", year: 1980, cover: "https://0.academia-photos.com/attachment_thumbnails/56856219/mini_magick20220708-8016-1qdd5gz.png", ptEdition: { available: false } },
+          { orig: "Du Divin à l'Humain", pt: "Do Divino ao Humano", year: 1981, cover: "", ptEdition: { available: false } },
+          { orig: "Christianisme / Islam", pt: "Cristianismo / Islã", year: 1981, cover: "https://d28hgpri8am2if.cloudfront.net/book_images/onix/cvr9781933316987/christianity-islam-9781933316987.jpg", ptEdition: { available: false } },
+          { orig: "Sur les Traces de la Religion pérenne", pt: "Sobre os Vestígios da Religião Perene", year: 1982, cover: "https://m.media-amazon.com/images/I/4113RHFZEDL._AC_UF1000,1000_QL80_.jpg", ptEdition: { available: false } },
+          { orig: "Approches du Phénomène religieux", pt: "Aproximações do Fenômeno Religioso", year: 1984, cover: "", ptEdition: { available: false } },
+          { orig: "Résumé de Métaphysique intégrale", pt: "Resumo de Metafísica Integral", year: 1985, cover: "https://umlivro.vteximg.com.br/arquivos/ids/2068423-1000-1000/9786598477660.jpg", ptEdition: { available: true, publisher: "Stella Maris (2025)", link: "https://www.amazon.com.br/s?k=schuon+resumo+metaf%C3%ADsica+integral" } },
+          { orig: "Avoir un Centre", pt: "Ter um Centro", year: 1988, cover: "", ptEdition: { available: true, publisher: "Polar Editorial (2018)", link: "https://www.estantevirtual.com.br/busca?q=schuon+ter+um+centro" } },
+          { orig: "Racines de la Condition humaine", pt: "Raízes da Condição Humana", year: 1990, cover: "https://m.media-amazon.com/images/I/71q1llUTYJL.jpg", ptEdition: { available: true, publisher: "Stella Maris (2025, 2ª ed.)", link: "https://www.amazon.com.br/s?k=schuon+ra%C3%ADzes+condi%C3%A7%C3%A3o+humana" } },
+          { orig: "Les Perles du Pèlerin", pt: "As Pérolas do Peregrino", year: 1990, cover: "https://umlivro.vteximg.com.br/arquivos/ids/2065190-292-292/9786598477653.jpg", ptEdition: { available: true, publisher: "Stella Maris (2025)", link: "https://www.amazon.com.br/s?k=schuon+p%C3%A9rolas+peregrino" } },
+          { orig: "Le Jeu des Masques", pt: "O Jogo das Máscaras", year: 1992, cover: "https://m.media-amazon.com/images/I/81N-l4bRyUL._UF1000,1000_QL80_.jpg", ptEdition: { available: true, publisher: "Stella Maris (2025)", link: "https://www.amazon.com.br/s?k=schuon+jogo+m%C3%A1scaras" } },
+          { orig: "La Transfiguration de l'Homme", pt: "A Transfiguração do Homem", year: 1995, cover: "https://cdn.cultura.com/cdn-cgi/image/width=830/media/pim/0_metadata-image-77761587.jpeg", ptEdition: { available: true, publisher: "Sapientia (2009)", link: "https://www.estantevirtual.com.br/busca?q=schuon+transfigura%C3%A7%C3%A3o" } },
+          { orig: "Road to the Heart", pt: "Road to the Heart", year: 1995, poetry: true, cover: "", ptEdition: { available: false } },
+          { orig: "Songs for a Spiritual Traveler", pt: "Songs for a Spiritual Traveler", year: 2002, poetry: true, cover: "", ptEdition: { available: false } },
+          { orig: "Adastra & Stella Maris", pt: "Adastra & Stella Maris", year: 2003, poetry: true, cover: "", ptEdition: { available: false } },
+          { orig: "World Wheel I–III", pt: "World Wheel I–III", year: 2006, poetry: true, cover: "", ptEdition: { available: false } },
+          { orig: "World Wheel IV–VII", pt: "World Wheel IV–VII", year: 2006, poetry: true, cover: "", ptEdition: { available: false } },
+          { orig: "Songs without Names I–VI", pt: "Songs without Names I–VI", year: 2006, poetry: true, posthumous: true, cover: "", ptEdition: { available: false } },
+          { orig: "Songs without Names VII–XII", pt: "Songs without Names VII–XII", year: 2007, poetry: true, posthumous: true, cover: "https://images-na.ssl-images-amazon.com/images/I/811K2dWb5dL._AC_UL600_SR600,600_.jpg", ptEdition: { available: false } },
+          { orig: "Autumn Leaves & The Ring", pt: "Autumn Leaves & The Ring", year: 2010, poetry: true, posthumous: true, cover: "", ptEdition: { available: false } },
+        ]
+      },
+      {
+        id: "burckhardt",
+        name: "Titus Burckhardt",
+        dates: "1908 – 1984",
+        label: "Autor III",
+        focus: "Arte Sagrada e Tradicional, e Simbolismo",
+        color: "#3D5C2B",
+        colorLight: "#ECF1E8",
+        colorMid: "#7AA55C",
+        books: [
+          { orig: "Schweizer Volkskunst / Art populaire suisse", pt: "Arte Popular Suíça", year: 1941, cover: "", ptEdition: { available: false } },
+          { orig: "Vom Sufitum — Einführung in die Mystik des Islam", pt: "Introdução à Doutrina Sufi", year: 1953, cover: "", ptEdition: { available: true, publisher: "Estrela da Manhã", link: "https://www.estantevirtual.com.br/busca?q=burckhardt+introdu%C3%A7%C3%A3o+doutrina+sufi" } },
+          { orig: "Vom Wesen heiliger Kunst in den Weltreligionen", pt: "Arte Sagrada no Oriente e no Ocidente", year: 1955, cover: "", ptEdition: { available: false } },
+          { orig: "Siena, Stadt der Jungfrau", pt: "Siena, Cidade da Virgem", year: 1958, cover: "", ptEdition: { available: false } },
+          { orig: "Alchemie, Sinn und Weltbild", pt: "Alquimia: Ciência do Cosmos, Ciência da Alma", year: 1960, cover: "", ptEdition: { available: true, publisher: "Estrela da Manhã", link: "https://www.estantevirtual.com.br/busca?q=burckhardt+alquimia" } },
+          { orig: "Fès, Stadt des Islam", pt: "Fez, Cidade do Islã", year: 1960, cover: "", ptEdition: { available: false } },
+          { orig: "Die maurische Kultur in Spanien", pt: "A Cultura Mourisca na Espanha", year: 1970, cover: "", ptEdition: { available: false } },
+          { orig: "Chartres und die Geburt der Kathedrale", pt: "Chartres e o Nascimento da Catedral", year: 1962, cover: "", ptEdition: { available: false } },
+          { orig: "Die islamische Kunst / L'Art de l'Islam", pt: "A Arte do Islã: Linguagem e Significado", year: 1976, cover: "", ptEdition: { available: false } },
+          { orig: "Clé spirituelle de l'Astrologie musulmane", pt: "Astrologia Mística segundo Ibn ʿArabī", year: 1977, note: "Publicação original: 1950", cover: "", ptEdition: { available: true, publisher: "Estrela da Manhã", link: "https://www.estantevirtual.com.br/busca?q=burckhardt+astrologia+m%C3%ADstica" } },
+          { orig: "Mirror of the Intellect", pt: "Espelho do Intelecto", year: 1987, posthumous: true, note: "Ed. W. Stoddart", cover: "", ptEdition: { available: false } },
+          { orig: "The Essential Titus Burckhardt", pt: "Compilação (ed. W. Stoddart)", year: 2003, posthumous: true, cover: "", ptEdition: { available: false } },
+        ]
+      },
+      {
+        id: "lings",
+        name: "Martin Lings",
+        dates: "1909 – 2005",
+        label: "Autor IV",
+        focus: "Sufismo, Islã, Simbolismo, Shakespeare — um pouco de cada dimensão da tradição",
+        color: "#5C2B4A",
+        colorLight: "#F3E8EF",
+        colorMid: "#A56A8D",
+        books: [
+          { orig: "The Book of Certainty", pt: "O Livro da Certeza", year: 1952, cover: "", ptEdition: { available: false } },
+          { orig: "A Moslem Saint of the Twentieth Century", pt: "Um Santo Muçulmano do Século XX", year: 1961, cover: "", ptEdition: { available: false } },
+          { orig: "Ancient Beliefs and Modern Superstitions", pt: "Sabedoria Tradicional e Superstições Modernas", year: 1964, cover: "", ptEdition: { available: true, publisher: "Polar Editorial (1998, 2ª ed. 2015)", link: "https://www.estantevirtual.com.br/busca?q=lings+sabedoria+tradicional+supersti%C3%A7%C3%B5es" } },
+          { orig: "The Heralds and Other Poems", pt: "Os Arautos e Outros Poemas", year: 1970, poetry: true, cover: "", ptEdition: { available: false } },
+          { orig: "A Return to the Spirit", pt: "Um Retorno ao Espírito", year: 1971, note: "Publ. como Abu Bakr Siraj ad-Din", cover: "", ptEdition: { available: false } },
+          { orig: "What is Sufism?", pt: "O Que é Sufismo?", year: 1975, cover: "", ptEdition: { available: false } },
+          { orig: "The Quranic Art of Calligraphy and Illumination", pt: "A Arte Corânica de Caligrafia e Iluminura", year: 1976, cover: "", ptEdition: { available: false } },
+          { orig: "Muhammad: His Life Based on the Earliest Sources", pt: "Muhammad: Sua Vida Baseada nas Fontes Mais Antigas", year: 1983, cover: "", ptEdition: { available: true, publisher: "Attar Editora (2010)", link: "https://www.estantevirtual.com.br/busca?q=martin+lings+muhammad" } },
+          { orig: "The Eleventh Hour", pt: "A Décima Primeira Hora", year: 1987, cover: "", ptEdition: { available: false } },
+          { orig: "The Secret of Shakespeare", pt: "A Arte Sagrada de Shakespeare", year: "1984/98", cover: "", ptEdition: { available: true, publisher: "Polar Editorial", link: "https://www.estantevirtual.com.br/busca?q=lings+arte+sagrada+shakespeare" } },
+          { orig: "Symbol & Archetype", pt: "Símbolo e Arquétipo", year: 1991, cover: "", ptEdition: { available: false } },
+          { orig: "Mecca: From Before Genesis Until Now", pt: "Meca: Desde Antes do Gênesis Até Agora", year: 2004, cover: "", ptEdition: { available: false } },
+          { orig: "Splendors of Qur'an Calligraphy and Illumination", pt: "Esplendores da Caligrafia e Iluminura Corânica", year: 2005, cover: "", ptEdition: { available: false } },
+          { orig: "A Return to the Spirit: Questions and Answers", pt: "Um Retorno ao Espírito (ed. ampliada)", year: 2005, cover: "", ptEdition: { available: false } },
+          { orig: "Collected Poems", pt: "Poemas Reunidos", year: 2007, posthumous: true, poetry: true, cover: "", ptEdition: { available: false } },
+        ]
+      }
+    ];
+
+    /* ═══════════════════════════════════════
+       COVER IMAGE COMPONENT
+       ═══════════════════════════════════════ */
+
+    function BookCover({ title, author, color, colorMid, coverUrl }) {
+      const [src, setSrc] = useState(coverUrl || null);
+      const [failed, setFailed] = useState(false);
+      const ref = useRef(null);
+      const attempted = useRef(!!coverUrl);
+
+      const fetchCover = useCallback(async () => {
+        if (attempted.current) return;
+        attempted.current = true;
+
+        // 1. Open Library (melhor cobertura para obras clássicas/europeias)
+        try {
+          const q = encodeURIComponent(`${title} ${author}`);
+          const res = await fetch(`https://openlibrary.org/search.json?q=${q}&limit=1&fields=cover_i`);
+          const data = await res.json();
+          const coverId = data?.docs?.[0]?.cover_i;
+          if (coverId) {
+            setSrc(`https://covers.openlibrary.org/b/id/${coverId}-M.jpg`);
+            return;
+          }
+        } catch {}
+
+        // 2. Google Books como fallback
+        try {
+          const q = encodeURIComponent(`${title} ${author}`);
+          const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1`);
+          const data = await res.json();
+          const thumb = data?.items?.[0]?.volumeInfo?.imageLinks?.thumbnail;
+          if (thumb) {
+            setSrc(thumb.replace("http://", "https://"));
+            return;
+          }
+        } catch {}
+
+        setFailed(true);
+      }, [title, author]);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(
+          ([entry]) => { if (entry.isIntersecting) { fetchCover(); observer.disconnect(); } },
+          { rootMargin: "200px" }
+        );
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+      }, [fetchCover]);
+
+      const shortTitle = title.length > 40 ? title.slice(0, 38) + "…" : title;
+
+      return (
+        <div ref={ref} style={{
+          width: 100, minWidth: 100, height: 145,
+          borderRadius: 4, overflow: "hidden",
+          background: failed || !src ? `linear-gradient(145deg, ${color}, ${colorMid})` : "#e8e4dc",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          boxShadow: "2px 3px 12px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)",
+          position: "relative", flexShrink: 0,
+        }}>
+          {src && !failed ? (
+            <img
+              src={src}
+              alt={title}
+              onError={() => setFailed(true)}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : failed ? (
+            <div style={{
+              padding: "10px 8px", textAlign: "center",
+              display: "flex", flexDirection: "column", justifyContent: "center",
+              height: "100%", gap: 6,
+            }}>
+              <span style={{
+                fontFamily: "var(--serif)", fontSize: 11, fontWeight: 600,
+                color: "#fff", lineHeight: 1.3, opacity: 0.95,
+                display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden",
+              }}>{shortTitle}</span>
+              <span style={{
+                fontFamily: "var(--sans)", fontSize: 7, fontWeight: 300,
+                color: "rgba(255,255,255,0.7)", letterSpacing: "0.1em", textTransform: "uppercase",
+              }}>{author.split(" ").pop()}</span>
+            </div>
+          ) : (
+            <div style={{ width: 20, height: 20, border: "2px solid rgba(0,0,0,0.1)", borderTop: "2px solid rgba(0,0,0,0.3)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+          )}
+        </div>
+      );
+    }
+
+    /* ═══════════════════════════════════════
+       BOOK CARD COMPONENT
+       ═══════════════════════════════════════ */
+
+    function BookCard({ book, index, author }) {
+      const num = String(index + 1).padStart(2, "0");
+
+      return (
+        <div style={{
+          display: "flex", gap: 20, padding: "24px 0",
+          borderBottom: "1px solid var(--border-light)",
+          alignItems: "flex-start",
+        }}>
+          <div style={{
+            fontFamily: "var(--serif)", fontSize: 28, fontWeight: 300,
+            color: author.color, lineHeight: 1, minWidth: 36, paddingTop: 4, opacity: 0.6,
+          }}>{num}</div>
+
+          <BookCover
+            title={book.orig}
+            author={author.name}
+            color={author.color}
+            colorMid={author.colorMid}
+            coverUrl={book.cover}
+          />
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontFamily: "var(--serif)", fontSize: 17, fontWeight: 500,
+              lineHeight: 1.4, marginBottom: 3,
+            }}>{book.orig}</div>
+            <div style={{
+              fontFamily: "var(--serif)", fontSize: 15, fontStyle: "italic",
+              fontWeight: 400, color: "var(--text-mid)", lineHeight: 1.5, marginBottom: 8,
+            }}>{book.pt}</div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+              <span style={{
+                fontFamily: "var(--sans)", fontSize: 12, fontWeight: 400,
+                color: "var(--text-light)", letterSpacing: "0.03em",
+              }}>{book.year}</span>
+              {book.posthumous && <Tag>Póstumo</Tag>}
+              {book.poetry && <Tag italic>Poesia</Tag>}
+              {book.note && <Tag>{book.note}</Tag>}
+            </div>
+
+            {book.ptEdition?.available ? (
+              <a href={book.ptEdition.link} target="_blank" rel="noopener noreferrer" style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                fontFamily: "var(--sans)", fontSize: 11.5, fontWeight: 400,
+                color: author.color, textDecoration: "none",
+                padding: "4px 10px", borderRadius: 3,
+                background: author.colorLight, letterSpacing: "0.02em",
+                transition: "opacity 0.2s",
+              }}
+              onMouseOver={e => e.currentTarget.style.opacity = "0.8"}
+              onMouseOut={e => e.currentTarget.style.opacity = "1"}
+              >
+                <span style={{ fontSize: 13 }}>🇧🇷</span>
+                Edição PT: {book.ptEdition.publisher}
+                <span style={{ fontSize: 10, opacity: 0.6 }}>↗</span>
+              </a>
+            ) : (
+              <span style={{
+                fontFamily: "var(--sans)", fontSize: 11, fontWeight: 300,
+                color: "var(--text-light)", fontStyle: "italic",
+              }}>Versão em português indisponível</span>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function Tag({ children, italic }) {
+      return (
+        <span style={{
+          fontFamily: "var(--sans)", fontSize: 10, fontWeight: 400,
+          letterSpacing: "0.08em", textTransform: "uppercase",
+          padding: "2px 8px", borderRadius: 2,
+          border: "1px solid var(--border)",
+          color: "var(--text-light)",
+          fontStyle: italic ? "italic" : "normal",
+        }}>{children}</span>
+      );
+    }
+
+    /* ═══════════════════════════════════════
+       MAIN APP
+       ═══════════════════════════════════════ */
+
+    function App() {
+      const [activeSection, setActiveSection] = useState("");
+      const [scrolled, setScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => {
+          setScrolled(window.scrollY > 100);
+          const sections = AUTHORS.map(a => ({
+            id: a.id,
+            el: document.getElementById(a.id),
+          }));
+          for (let i = sections.length - 1; i >= 0; i--) {
+            if (sections[i].el && sections[i].el.getBoundingClientRect().top < 200) {
+              setActiveSection(sections[i].id);
+              break;
+            }
+          }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+      }, []);
+
+      return (
+        <div style={{ fontFamily: "var(--serif)", background: "var(--bg)", color: "var(--text)", minHeight: "100vh" }}>
+          <style>{`
+            @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Jost:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+            :root {
+              --serif: 'EB Garamond', 'Perpetua', 'Palatino Linotype', Georgia, serif;
+              --sans: 'Jost', 'Futura', 'Century Gothic', sans-serif;
+              --bg: #FAFAF7;
+              --text: #1C1B18;
+              --text-mid: #5C5850;
+              --text-light: #908A7E;
+              --border: #E2DED6;
+              --border-light: #EEEAE3;
+            }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html { scroll-behavior: smooth; }
+            @keyframes spin { to { transform: rotate(360deg); } }
+            @keyframes fadeUp {
+              from { opacity: 0; transform: translateY(18px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+            a:hover { opacity: 0.85; }
+          `}</style>
+
+          {/* ══ HERO ══ */}
+          <header style={{
+            minHeight: "100vh", display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", textAlign: "center",
+            padding: "4rem 1.5rem", position: "relative",
+          }}>
+            <img src="https://i.ibb.co/HTd5bw2Z/sol-emplumado.png" alt="Sol Emplumado" style={{
+              width: 130, height: "auto", opacity: 0.55, marginBottom: "2.5rem",
+              animation: "fadeUp 0.8s ease 0.2s both",
+            }} />
+
+            <h1 style={{
+              fontFamily: "var(--serif)", fontWeight: 400,
+              fontSize: "clamp(1.8rem, 4.5vw, 3rem)", lineHeight: 1.3,
+              maxWidth: 620, marginBottom: "1.2rem",
+              animation: "fadeUp 0.8s ease 0.4s both",
+            }}>
+              O Mínimo Essencial para Compreender a{" "}
+              <em style={{ fontWeight: 500 }}>Cosmovisão Tradicional</em>
+            </h1>
+
+            <p style={{
+              fontFamily: "var(--sans)", fontWeight: 300, fontSize: "0.95rem",
+              color: "var(--text-light)", maxWidth: 460, lineHeight: 1.75,
+              marginBottom: "3rem", animation: "fadeUp 0.8s ease 0.6s both",
+            }}>
+              Guia de leituras organizado cronologicamente pelas obras fundamentais
+              da Escola Tradicionalista — de Guénon a Lings.
+            </p>
+
+            <div style={{
+              display: "flex", gap: "2rem", flexWrap: "wrap", justifyContent: "center",
+              animation: "fadeUp 0.8s ease 0.8s both",
+            }}>
+              {AUTHORS.map(a => (
+                <a key={a.id} href={`#${a.id}`} style={{
+                  fontFamily: "var(--sans)", fontWeight: 400, fontSize: "0.72rem",
+                  letterSpacing: "0.18em", textTransform: "uppercase",
+                  textDecoration: "none", color: "var(--text-light)",
+                  transition: "color 0.3s",
+                }}
+                onMouseOver={e => e.currentTarget.style.color = a.color}
+                onMouseOut={e => e.currentTarget.style.color = "var(--text-light)"}
+                >{a.name.split(" ").pop()}</a>
+              ))}
+            </div>
+          </header>
+
+          {/* ══ STICKY NAV ══ */}
+          <nav style={{
+            position: "sticky", top: 0, zIndex: 100,
+            background: "rgba(250,250,247,0.92)", backdropFilter: "blur(12px)",
+            borderBottom: "1px solid var(--border-light)",
+            boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.05)" : "none",
+            transition: "box-shadow 0.3s",
+          }}>
+            <div style={{
+              maxWidth: 860, margin: "0 auto", padding: "0 1.5rem",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              height: 52,
+            }}>
+              <span style={{
+                fontFamily: "var(--serif)", fontWeight: 500, fontSize: "0.95rem",
+              }}>Cosmovisão Tradicional</span>
+              <div style={{ display: "flex", gap: "1.5rem" }}>
+                {AUTHORS.map(a => (
+                  <a key={a.id} href={`#${a.id}`} style={{
+                    fontFamily: "var(--sans)", fontSize: "0.72rem",
+                    letterSpacing: "0.12em", textTransform: "uppercase",
+                    textDecoration: "none",
+                    color: activeSection === a.id ? a.color : "var(--text-light)",
+                    borderBottom: activeSection === a.id ? `1px solid ${a.color}` : "1px solid transparent",
+                    paddingBottom: 2, transition: "all 0.3s",
+                  }}>{a.name.split(" ").pop()}</a>
+                ))}
+              </div>
+            </div>
+          </nav>
+
+          {/* ══ AUTHOR SECTIONS ══ */}
+          {AUTHORS.map((author, ai) => (
+            <div key={author.id}>
+              {ai > 0 && (
+                <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 1.5rem" }}>
+                  <div style={{ height: 1, background: "linear-gradient(to right, transparent, var(--border), transparent)" }} />
+                </div>
+              )}
+              <section id={author.id} style={{ maxWidth: 860, margin: "0 auto", padding: "5rem 1.5rem" }}>
+                <div style={{ marginBottom: "3rem", paddingBottom: "1.8rem", borderBottom: `1px solid var(--border)` }}>
+                  <div style={{
+                    fontFamily: "var(--sans)", fontSize: "0.7rem", fontWeight: 500,
+                    letterSpacing: "0.2em", textTransform: "uppercase",
+                    color: author.color, marginBottom: "0.7rem",
+                  }}>{author.label}</div>
+                  <h2 style={{
+                    fontFamily: "var(--serif)", fontWeight: 400,
+                    fontSize: "clamp(1.8rem, 4vw, 2.6rem)", lineHeight: 1.2,
+                    marginBottom: "0.4rem",
+                  }}>{author.name}</h2>
+                  <div style={{
+                    fontFamily: "var(--sans)", fontSize: "0.85rem", fontWeight: 300,
+                    color: "var(--text-light)", marginBottom: "0.8rem",
+                  }}>{author.dates}</div>
+                  <p style={{
+                    fontFamily: "var(--serif)", fontWeight: 400, fontStyle: "italic",
+                    fontSize: "1rem", color: "var(--text-mid)", maxWidth: 550, lineHeight: 1.7,
+                  }}>{author.focus}</p>
+                </div>
+
+                <div>
+                  {author.books.map((book, bi) => (
+                    <BookCard key={bi} book={book} index={bi} author={author} />
+                  ))}
+                </div>
+              </section>
+            </div>
+          ))}
+
+          {/* ══ FOOTER ══ */}
+          <footer style={{
+            maxWidth: 860, margin: "0 auto", padding: "4rem 1.5rem 3rem",
+            textAlign: "center",
+          }}>
+
+            <p style={{
+              fontFamily: "var(--sans)", fontWeight: 300, fontSize: "0.82rem",
+              color: "var(--text-light)", lineHeight: 1.9,
+            }}>
+              O mínimo essencial para compreender a cosmovisão tradicional.<br />
+              As datas referem-se à primeira edição original (francesa, alemã ou inglesa, conforme o caso).<br />
+              Obras póstumas compostas de artigos reunidos após a morte do autor.<br />
+              <span style={{ marginTop: 8, display: "inline-block", opacity: 0.6 }}>
+              </span>
+            </p>
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
